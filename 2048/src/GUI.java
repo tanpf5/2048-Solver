@@ -45,11 +45,13 @@ public class GUI {
 	public GUI(final int width, final int height, final GameManager gm){
 		frame = new JFrame();
 		frame.setTitle("2048-Solver");
-		JButton startBtn = new JButton("START");
+		
+		final JButton startBtn = new JButton("START");
 		startBtn.setFocusPainted(false);
 		startBtn.addActionListener(new ActionListener(){
 			@Override
 			public void actionPerformed(ActionEvent e){
+				gm.setCurPlayer(new HumanPlayer(startBtn));
 				gm.start();
 			}
 			
@@ -133,6 +135,7 @@ public class GUI {
 		frame.setVisible(true);
 		frame.setResizable(false);
 		frame.setLocationRelativeTo(null);
+	
 	}
 	public GUI(GameManager gm){
 		this(WIDTH,HEIGHT, gm);
@@ -160,6 +163,17 @@ public class GUI {
 			}
 		};
 		new Timer(100, taskController).start();
+		while(true){
+			gm.play();
+			try
+            {
+                Thread.sleep(100);
+            }
+            catch (InterruptedException e1)
+            {
+                e1.printStackTrace();
+            }
+		}
 	}
 
 }
