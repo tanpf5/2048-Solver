@@ -51,7 +51,7 @@ public class GUI {
 		startBtn.addActionListener(new ActionListener(){
 			@Override
 			public void actionPerformed(ActionEvent e){
-				gm.setCurPlayer(new HumanPlayer(startBtn));
+				gm.setPlayer(new HumanPlayer(startBtn));
 				gm.start();
 			}
 			

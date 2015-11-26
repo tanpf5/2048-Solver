@@ -1,3 +1,6 @@
+
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Random;
 
 public class GameManager {
@@ -11,6 +14,7 @@ public class GameManager {
 	public static final int RIGHT = 3;
 	
 	private Player curPlayer;
+	private Player player;
 	private Boolean hasWon;
 	private int[][] cells;
 	private int[] tiles;
@@ -38,6 +42,9 @@ public class GameManager {
 	public void setCurPlayer(Player curPlayer){
 		this.curPlayer = curPlayer;
 	}
+	public void setPlayer(Player p){
+		this.player = p;
+	}
 	public void start(){
 		for(int r = 0; r< cells.length;r++){
 			for(int c = 0; c<cells[r].length; c++){
@@ -59,17 +66,75 @@ public class GameManager {
 		cells[randomX][randomY] = BASIC_TILES[0];
 		cells[randomX2][randomY2] = BASIC_TILES[0];
 	}
-	public void play(){
+	public  void play(){
+		
 		while(hasWon == null){
+			synchronized(this){
+				curPlayer = player;
+			}
 			if(curPlayer != null){
 				int tmpAction =curPlayer.getAction();
 				System.out.println(tmpAction);
 				score += move(cells, tmpAction);
 				System.out.println(score);
+				generateNewTiles(cells);
 			}			
-			
+			if(hasLost(cells)){
+				hasWon = false;
+			}
+		}
+		System.out.println("game over");
+		
+	}
+	public boolean hasLost(int[][] cells){
+		for(int r = 0; r< cells.length; r++){
+			for(int c =0; c < cells[r].length; c++){
+				if(cells[r][c] == EMPTY_TILE){
+					return false;
+				}
+			}
+		}
+		for(int r = 0; r <cells.length; r++){
+			for(int c = 0; c< cells[r].length; c++){
+				if(canBeMerged(cells, r, c)){
+					return false;
+				}
+			}
+		}
+		return true;
+	}
+	public boolean canBeMerged(int[][] cells, int row, int column){
+		return ((row > 0 && cells[row - 1][column] == cells[row][column]) ||
+	            (column < cells[row].length - 1 && cells[row][column + 1] == cells[row][column]) ||
+	            (row < cells.length - 1 && cells[row + 1][column] == cells[row][column]) ||
+	            (column > 0 && cells[row][column - 1] == cells[row][column]));
+		
+	}
+	public void generateNewTiles(int[][] cells){
+		List<int[]> emptyTiles = getEmptyTiles(cells);
+		if(!emptyTiles.isEmpty()){
+			int[] randomTile = emptyTiles.get(random.nextInt(emptyTiles.size()));
+			int value;
+			if(random.nextDouble() < 0.9d ){
+				value = 2;
+			}
+			else{
+				value = 4;
+			}
+			cells[randomTile[0]][randomTile[1]] = value;
 		}
 		
+	}
+	public List<int[]> getEmptyTiles(int[][] cells){
+		List<int[]> emptyTiles = new ArrayList<>();
+		for(int r =0; r<cells.length; r++){
+			for(int c = 0; c < cells[r].length; c++){
+				if(cells[r][c] == EMPTY_TILE){
+					emptyTiles.add(new int[] {r,c});
+				}
+			}
+		}
+		return emptyTiles;
 	}
 	public int move(int[][]cells, int direction){
 		switch(direction){
