@@ -65,7 +65,7 @@ public class GameManager {
 				int tmpAction =curPlayer.getAction();
 				System.out.println(tmpAction);
 				score += move(cells, tmpAction);
-				
+				System.out.println(score);
 			}			
 			
 		}
@@ -88,18 +88,96 @@ public class GameManager {
 	}
 	public int moveUp(int[][] cells){
 		int score = 0;
+		for (int c = 0; c < cells[0].length; c++)
+        {
+            final int[] tiles = new int[cells.length];
+            int i = 0;
+            for (int r = cells.length - 1; r >= 0; r--){
+                tiles[i] = cells[r][c];
+                i++;
+            }
+            score += mergeTiles(tiles);
+            i = 0;
+            for (int r = cells.length - 1; r >= 0; r--){
+            	cells[r][c] = tiles[i];
+                i++;
+            }
+        }
 		return score;
 	}
 	public int moveRight(int[][] cells){
 		int score = 0;
+		for (int r = 0; r < cells.length; r++){
+            score += mergeTiles(cells[r]);
+        }
 		return score;
 	}
 	public int moveDown(int[][] cells){
 		int score = 0;
+		for (int c = 0; c < cells[0].length; c++)
+        {
+            final int[] tiles = new int[cells.length];
+            int i = 0;
+            for (int r = 0; r < cells.length; r++){
+                tiles[i] = cells[r][c];
+                i++;
+            }
+            score += mergeTiles(tiles);
+            i = 0;
+            for (int r = 0; r < cells.length; r++){
+            	cells[r][c] = tiles[i];
+                i++;
+            }
+        }
 		return score;
 	}
 	public int moveLeft(int[][] cells){
 		int score = 0;
+		for (int r = 0; r < cells.length; r++){
+            final int[] tiles = new int[cells[r].length];
+            int i = 0;
+            for (int c = cells[r].length - 1; c >= 0; c--){
+                tiles[i] = cells[r][c];
+                i++;
+            }
+            score += mergeTiles(tiles);
+            i = 0;
+            for (int c = cells[r].length - 1; c >= 0; c--){
+            	cells[r][c] = tiles[i];
+                i++;
+            }
+        }
+		return score;
+	}
+	public int mergeTiles(int[] tiles){
+		for(int i = tiles.length - 2; i>= 0; i--){
+			int j = i;
+			while(j < tiles.length -1){
+				if(tiles[j+1] == EMPTY_TILE){
+					tiles[j+1] = tiles[j];
+					tiles[j] = EMPTY_TILE;
+				}
+				j++;
+			}
+		}
+		int score = 0;
+		for(int i = tiles.length - 2; i >= 0; i--){
+			if(tiles[i+1] == tiles[i]){
+				tiles[i+1] = tiles[i+1] + tiles[i];
+				score += tiles[i+1];
+				tiles[i] = 0;
+			}
+		}
+		for(int i = tiles.length - 2; i >= 0; i--){
+			int j = i;
+			while(j < tiles.length - 1){
+				if(tiles[j+1] == EMPTY_TILE){
+					tiles[j+1] = tiles[j];
+					tiles[j] = EMPTY_TILE;
+				}
+				j++;
+			}
+		}
 		return score;
 	}
 }
