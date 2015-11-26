@@ -62,7 +62,7 @@ public class GUI {
 		startAIBtn.addActionListener(new ActionListener(){
 			@Override
 			public void actionPerformed(ActionEvent e){
-				//gm.setCurPlayer(new HumanPlayer(startAIBtn));
+				gm.setPlayer(new AIPlayer(gm.getRandom(), gm));
 				gm.start();
 			}
 			

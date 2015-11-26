@@ -12,6 +12,7 @@ public class GameManager {
 	public static final int DOWN = 1;
 	public static final int LEFT = 2;
 	public static final int RIGHT = 3;
+	public static final int[] ACTIONS = {UP, DOWN, LEFT, RIGHT};
 	
 	private Player curPlayer;
 	private Player player;
@@ -24,6 +25,10 @@ public class GameManager {
 	public GameManager(int row, int column){
 		
 		cells = new int[row][column];
+	}
+	
+	public Random getRandom() {
+		return random;
 	}
 	
 	public int[][] getCells(){
@@ -141,7 +146,7 @@ public class GameManager {
 		}
 		
 	}
-	public List<int[]> getEmptyTiles(int[][] cells){
+	public static List<int[]> getEmptyTiles(int[][] cells){
 		List<int[]> emptyTiles = new ArrayList<>();
 		for(int r =0; r<cells.length; r++){
 			for(int c = 0; c < cells[r].length; c++){
@@ -152,7 +157,7 @@ public class GameManager {
 		}
 		return emptyTiles;
 	}
-	public int move(int[][]cells, int direction){
+	public static int move(int[][]cells, int direction){
 		switch(direction){
 		case UP:
 			return moveUp(cells);
@@ -167,7 +172,7 @@ public class GameManager {
 			return 0;
 		}
 	}
-	public int moveUp(int[][] cells){
+	public static int moveUp(int[][] cells){
 		int score = 0;
 		for (int c = 0; c < cells[0].length; c++)
         {
@@ -186,14 +191,14 @@ public class GameManager {
         }
 		return score;
 	}
-	public int moveRight(int[][] cells){
+	public static int moveRight(int[][] cells){
 		int score = 0;
 		for (int r = 0; r < cells.length; r++){
             score += mergeTiles(cells[r]);
         }
 		return score;
 	}
-	public int moveDown(int[][] cells){
+	public static int moveDown(int[][] cells){
 		int score = 0;
 		for (int c = 0; c < cells[0].length; c++)
         {
@@ -212,7 +217,7 @@ public class GameManager {
         }
 		return score;
 	}
-	public int moveLeft(int[][] cells){
+	public static int moveLeft(int[][] cells){
 		int score = 0;
 		for (int r = 0; r < cells.length; r++){
             final int[] tiles = new int[cells[r].length];
@@ -230,7 +235,7 @@ public class GameManager {
         }
 		return score;
 	}
-	public int mergeTiles(int[] tiles){
+	public static int mergeTiles(int[] tiles){
 		for(int i = tiles.length - 2; i>= 0; i--){
 			int j = i;
 			while(j < tiles.length -1){
