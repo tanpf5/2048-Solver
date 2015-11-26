@@ -56,12 +56,24 @@ public class GUI {
 			}
 			
 		});
+		
+		final JButton startAIBtn = new JButton("START AI");
+		startAIBtn.setFocusPainted(false);
+		startAIBtn.addActionListener(new ActionListener(){
+			@Override
+			public void actionPerformed(ActionEvent e){
+				//gm.setCurPlayer(new HumanPlayer(startAIBtn));
+				gm.start();
+			}
+			
+		});
 		final JLabel score = new JLabel();
 		score.setText("Score: 0");
 		score.setBorder(BorderFactory.createEmptyBorder(0,0,0,10));
 		
 		JMenuBar menuBar = new JMenuBar();
 		menuBar.add(startBtn);
+		menuBar.add(startAIBtn);
 		menuBar.add(Box.createHorizontalGlue());
 		menuBar.add(score);
 		
