@@ -29,7 +29,9 @@ public class GameManager {
 	public int[][] getCells(){
 		return cells;
 	}
-
+	public Boolean getWinFlag(){
+		return hasWon;
+	}
 	public int[] getTiles(){
 		return tiles;
 	}
@@ -52,7 +54,7 @@ public class GameManager {
 			}
 		}
 		score = 0;
-		
+		hasWon = null;
 		int randomX = 0;
 		int randomY = 0;
 		int randomX2 = 0;
@@ -78,12 +80,26 @@ public class GameManager {
 				score += move(cells, tmpAction);
 				System.out.println(score);
 				generateNewTiles(cells);
-			}			
-			if(hasLost(cells)){
+			}
+			if(hasWon(cells)){
+				hasWon = true;
+			}
+			else if(hasLost(cells)){
 				hasWon = false;
 			}
 		}
 		System.out.println("game over");
+		
+	}
+	public boolean hasWon(int[][] cells){
+		for(int r = 0; r< cells.length; r++){
+			for(int c = 0; c < cells[r].length; c++){
+				if(cells[r][c] == 2048){
+					return true;
+				}
+			}
+		}
+		return false;
 		
 	}
 	public boolean hasLost(int[][] cells){

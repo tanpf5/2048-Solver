@@ -88,6 +88,9 @@ public class GUI {
 			public void paintComponent(Graphics g){
 				super.paintComponent(g);
 				int[][] cells = gm.getCells();
+				float alpha;
+				Boolean gameOverFlg = gm.getWinFlag();
+				alpha = gameOverFlg == null? 1.0f:0.3f;
 				Graphics2D graphics = (Graphics2D) g.create();
 				graphics.setColor(getColor(BG_COLOR, 1.0f));
 				graphics.fillRoundRect(0, 0, getWidth(), getHeight(), 0, 0);
@@ -99,15 +102,15 @@ public class GUI {
 				//System.out.println("tileInnerHeight"+tileInnerHeight);
 				int widthPadding = (int) (0.2d * tileInnerWidth);
 				int heightPadding = (int) (0.2d * tileInnerHeight);
-				for(int r = 0; r<cells.length; r++){
-					for(int c = 0; c<cells[r].length;c++){
+				for(int r = 0; r < cells.length; r++){
+					for(int c = 0; c < cells[r].length;c++){
 						int position = (int) (Math.log(cells[r][c])/Math.log(2));
 						//set background color of each tile
 						if(cells[r][c] == 0){
-							graphics.setColor(getColor(EMPTY_TILE_COLOR,1.0f));
+							graphics.setColor(getColor(EMPTY_TILE_COLOR,alpha));
 						}
 						else{
-							graphics.setColor(getColor(TILE_BG_COLORS[position-1],1.0f));
+							graphics.setColor(getColor(TILE_BG_COLORS[position-1],alpha));
 						}
 						int xPos = (c+1)*widthPadding + c*tileInnerWidth;
 						int yPos = (r+1)*heightPadding+ r*tileInnerHeight;
@@ -116,10 +119,10 @@ public class GUI {
 						//if the cell is not an empty tile, set specific font color and text.
 						if(cells[r][c] > 0){
 							if(position == 1 || position == 2){
-								graphics.setColor(getColor(FONT_COLORS[0],1.0f));
+								graphics.setColor(getColor(FONT_COLORS[0],alpha));
 							}
 							else{
-								graphics.setColor(getColor(FONT_COLORS[1],1.0f));
+								graphics.setColor(getColor(FONT_COLORS[1],alpha));
 							}
 							String text = String.valueOf(cells[r][c]);
 							graphics.setFont(FONT);
@@ -134,7 +137,31 @@ public class GUI {
 				}
 				
 				score.setText("Score: " + String.valueOf(gm.getScore()));
-				
+				if(gameOverFlg != null){
+					FontMetrics fontMetrics;
+					String text;
+					int tWidth;
+					int tHeight;
+					if(gameOverFlg){
+						text = "You Win!";
+                        fontMetrics = g.getFontMetrics(graphics.getFont());
+                        tWidth = fontMetrics.stringWidth(text);
+                        tHeight = fontMetrics.getHeight();
+                        graphics.setColor(FONT_COLORS[0]);
+                        graphics.drawString(text, (int) ((0.5d * getWidth()) - (tWidth * 0.5d)),
+                                       (int) ((0.5d * getHeight()) + (tHeight * 0.3d)));
+						
+					}else{
+						text = "Game over!";
+                        fontMetrics = g.getFontMetrics(graphics.getFont());
+                        tWidth = fontMetrics.stringWidth(text);
+                        tHeight = fontMetrics.getHeight();
+                        graphics.setColor(FONT_COLORS[1]);
+                        graphics.drawString(text, (int) ((0.5d * getWidth()) - (tWidth * 0.5d)),
+                                       (int) ((0.5d * getHeight()) + (tHeight * 0.3d)));
+						
+					}
+				}
 				
 			}
 			
@@ -166,7 +193,6 @@ public class GUI {
 		GameManager gm = new GameManager(4,4);
 		final GUI gui = new GUI(gm);
 		ActionListener taskController = new ActionListener(){
-
 
 			@Override
 			public void actionPerformed(ActionEvent e) {
