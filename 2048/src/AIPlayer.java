@@ -4,7 +4,8 @@ import java.util.Random;
 
 
 public class AIPlayer implements Player {
-	public static final int DEFAULT_DEPTH = 5;
+	public static final int DEFAULT_DEPTH = 6;
+	public static final int BIG_TILE = 64;
     
     private final Random random;
     private final GameManager game;
@@ -35,7 +36,7 @@ public class AIPlayer implements Player {
 	private double getScore(int action) {
 		int[][] clone = deep_copy(game.getCells());
         int bonus = GameManager.move(clone, action);
-        return getExpectiValue(game.getScore() + bonus, clone, 0);
+        return getExpectiValue(game.getScore() + bonus, clone, 1);
 	}
 	
 	private double getExpectiValue(int totalScore, int[][] cells, int depth) {
@@ -44,13 +45,13 @@ public class AIPlayer implements Player {
 		}
 		List<Integer[]> emptyCells = getAllEmptyCells(cells);
 		int n = emptyCells.size();
-		int expectiScore = 0;
+		double expectiScore = 0;
 		for (Integer[] cell : emptyCells) {
 			int[][] clone = deep_copy(cells);
 			clone[cell[0]][cell[1]] = 2;
-			expectiScore += getMaxValue(totalScore, clone, depth + 1) * 0.9 / (1.0 / n);
+			expectiScore += getMaxValue(totalScore, clone, depth + 1) * 0.9 * (1.0 / n);
 			clone[cell[0]][cell[1]] = 4;
-			expectiScore += getMaxValue(totalScore, clone, depth + 1) * 0.1 / (1.0 / n);
+			expectiScore += getMaxValue(totalScore, clone, depth + 1) * 0.1 * (1.0 / n);
 		}
 		return expectiScore;
 	}
@@ -71,8 +72,41 @@ public class AIPlayer implements Player {
         return maxScore;
 	}
 	
+	private double getScoreFactor(int totalScore) {
+		/*int factor = 1;
+		while (totalScore >= 10) {
+			totalScore /= 10;
+			factor *= 10;
+		}
+		return factor;*/
+		return Math.log10(totalScore);
+	}
+	
 	private double evaluationFunction(int totalScore, int[][] cells) {
-		return totalScore;
+		double scoreFactor = getScoreFactor(totalScore);
+		return totalScore 
+				+ getCornerBonus(cells) * scoreFactor
+				+ getEmptyCellsBonus(cells) * scoreFactor;
+	}
+	
+	private double getCornerBonus(int[][] cells) {
+		double factor = 1.0;
+		double total = 0;
+		for (int i = 0; i < cells.length; i++)
+			for (int j = 0; j < cells[i].length; j++) 
+				if (cells[i][j] != GameManager.EMPTY_TILE) {
+					int n = 1;
+					if (i % (cells.length - 1) == 0) n *= 2;
+					if (j % (cells.length - 1) == 0) n *= 2;
+					total += n * Math.log(cells[i][j]);
+				}
+		return total * factor;
+	}
+	
+	private double getEmptyCellsBonus(int[][] cells) {
+		int count = getAllEmptyCells(cells).size();
+		double factor = 1.0;
+		return Math.log(count) * factor;
 	}
 	
 	private List<Integer[]> getAllEmptyCells(int[][] cells) {

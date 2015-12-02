@@ -73,33 +73,32 @@ public class GameManager {
 		cells[randomX][randomY] = BASIC_TILES[0];
 		cells[randomX2][randomY2] = BASIC_TILES[0];
 	}
-	public  void play(){
+	public void play(){
 		
-		while(hasWon == null){
-			synchronized(this){
+		while (hasWon == null) {
+			synchronized(this) {
 				curPlayer = player;
 			}
-			if(curPlayer != null){
+			if (curPlayer != null) {
 				int tmpAction =curPlayer.getAction();
 				System.out.println(tmpAction);
 				score += move(cells, tmpAction);
 				System.out.println(score);
 				generateNewTiles(cells);
 			}
-			if(hasWon(cells)){
+			if (hasWon(cells)) {
 				hasWon = true;
 			}
-			else if(hasLost(cells)){
+			else if (hasLost(cells)) {
 				hasWon = false;
 			}
 		}
-		System.out.println("game over");
-		
+		System.out.println("game over");	
 	}
 	public boolean hasWon(int[][] cells){
 		for(int r = 0; r< cells.length; r++){
 			for(int c = 0; c < cells[r].length; c++){
-				if(cells[r][c] == 2048){
+				if (cells[r][c] == 2048){
 					return true;
 				}
 			}
@@ -108,16 +107,16 @@ public class GameManager {
 		
 	}
 	public boolean hasLost(int[][] cells){
-		for(int r = 0; r< cells.length; r++){
-			for(int c =0; c < cells[r].length; c++){
-				if(cells[r][c] == EMPTY_TILE){
+		for (int r = 0; r < cells.length; r++) {
+			for (int c =0; c < cells[r].length; c++) {
+				if (cells[r][c] == EMPTY_TILE) {
 					return false;
 				}
 			}
 		}
-		for(int r = 0; r <cells.length; r++){
-			for(int c = 0; c< cells[r].length; c++){
-				if(canBeMerged(cells, r, c)){
+		for (int r = 0; r <cells.length; r++) {
+			for (int c = 0; c< cells[r].length; c++) {
+				if (canBeMerged(cells, r, c)) {
 					return false;
 				}
 			}
