@@ -39,7 +39,7 @@ public class GUI {
 			new Color(0xECC230)
 			
 	};
-	public static Font FONT = new Font("Helvetica Neue",Font.BOLD,55);
+	public static Font FONT = new Font("Helvetica Neue",Font.BOLD, 42);
 	
 	private JFrame frame;
 	public GUI(final int width, final int height, final GameManager gm){
@@ -125,7 +125,7 @@ public class GUI {
 								graphics.setColor(getColor(FONT_COLORS[1],alpha));
 							}
 							String text = String.valueOf(cells[r][c]);
-							graphics.setFont(FONT);
+							graphics.setFont(scaleFont(text, tileInnerWidth * 0.75f, graphics, FONT));
 							FontMetrics fm = g.getFontMetrics(graphics.getFont());
 							int textWidth = fm.stringWidth(text);
 							int textHeight = fm.getHeight();
@@ -189,6 +189,19 @@ public class GUI {
 		return new Color(ingredients[0],ingredients[1],ingredients[2],alpha);
 	}
 
+    private static final Font scaleFont(final String text, 
+    		final float width,
+            final Graphics g,
+            final Font font) {
+    	final float fontWidth = g.getFontMetrics(font).stringWidth(text);
+    	if (fontWidth <= width)	{
+    		return font;
+    	} else {
+    		final float fontSize = ((float) width / fontWidth) * font.getSize();
+    		return font.deriveFont(fontSize);
+    	}
+    }
+	
 	public static void main(String[] args){
 		GameManager gm = new GameManager(4,4);
 		final GUI gui = new GUI(gm);

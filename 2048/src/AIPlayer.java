@@ -101,8 +101,8 @@ public class AIPlayer implements Player {
 			for (int j = 0; j < cells[i].length; j++) 
 				if (cells[i][j] != GameManager.EMPTY_TILE) {
 					int n = 1;
-					if (i % (cells.length - 1) == 0) n *= 2;
-					if (j % (cells.length - 1) == 0) n *= 2;
+					if (i % (cells.length - 1) == 0) n *= 2.5;
+					if (j % (cells.length - 1) == 0) n *= 2.5;
 					total += n * Math.log(cells[i][j]);
 				}
 		return total * factor;
