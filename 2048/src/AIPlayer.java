@@ -6,7 +6,11 @@ import java.util.Random;
 public class AIPlayer implements Player {
 	public static final int DEFAULT_DEPTH = 6;
 	public static final int BIG_TILE = 64;
-    
+	public static final int[] UP = new int[] { -1, 0 };
+    public static final int[] RIGHT = new int[] { 0, 1 };
+    public static final int[] DOWN = new int[] { 1, 0 };
+    public static final int[] LEFT = new int[] { 0, -1 };
+    public static final int[][] DIRECTIONS = new int[][] { UP, RIGHT, DOWN, LEFT };
     private final Random random;
     private final GameManager game;
     private int action;
@@ -86,7 +90,8 @@ public class AIPlayer implements Player {
 		double scoreFactor = getScoreFactor(totalScore);
 		return totalScore 
 				+ getCornerBonus(cells) * scoreFactor
-				+ getEmptyCellsBonus(cells) * scoreFactor;
+				+ getEmptyCellsBonus(cells) * scoreFactor
+				+ getAdjacencyBonus(cells) * scoreFactor;
 	}
 	
 	private double getCornerBonus(int[][] cells) {
@@ -121,6 +126,42 @@ public class AIPlayer implements Player {
 		return emptyCells;
 	}
 	
+	private boolean isValid(int[][] cells, int row, int column){
+		return row > -1 &&
+				row < cells.length &&
+				column > -1 &&
+				column < cells[row].length;
+	}
+	private boolean isEmpty(int[][] cells, int row, int column){
+		return cells[row][column] == GameManager.EMPTY_TILE;
+	}
+	private int[] getFarthestCell(int[][] cells, int row, int column, int[] vector){
+		do{
+			row += vector[0];
+			column += vector[1];
+			
+		}while(isValid(cells,row,column) && isEmpty(cells, row, column));
+		return new int[] {row, column};
+	}
+	private double getAdjacencyBonus(int[][] cells){
+		double bonus = 0.0d;
+		for(int r = 0; r < cells.length; r++){
+			for(int c = 0; c< cells[r].length; c++){
+				if(!isEmpty(cells, r,c)){
+					int p = (int) (Math.log(cells[r][c])/Math.log(2));
+					for(int dir = 1; dir <= 2; dir++){
+						int[] farthestCell = getFarthestCell(cells, r, c, DIRECTIONS[dir]);
+						if(isValid(cells, farthestCell[0], farthestCell[1] ) &&
+								!isEmpty(cells, farthestCell[0],farthestCell[1])){
+							int p2 = (int) (Math.log(cells[farthestCell[0]][farthestCell[1]]) / Math.log(2));
+							bonus -= Math.abs(p - p2);
+						}
+					}
+				}
+			}
+		}
+		return bonus;
+	}
 	private int[][] deep_copy(int[][] cells) {
 		int[][] copy = new int[cells.length][cells[0].length];
 		for (int i = 0; i < cells.length; i++)
@@ -128,4 +169,6 @@ public class AIPlayer implements Player {
 				copy[i][j] = cells[i][j];
 		return copy;
 	}
+	
+	
 }
