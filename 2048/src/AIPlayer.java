@@ -1,4 +1,5 @@
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Random;
 
@@ -27,7 +28,7 @@ public class AIPlayer implements Player {
         final double[] scores = new double[4];
         int bestAction = -1;
         double maxScore = Integer.MIN_VALUE;
-        for (int action : GameManager.ACTIONS) {
+        for (int action : getLegalAction(GameManager.ACTIONS)) {
         	double score = getScore(action);
         	scores[action] = score;
         	if (score > maxScore) {
@@ -37,6 +38,27 @@ public class AIPlayer implements Player {
         }
         return bestAction;
 	}
+	
+	private Integer[] getLegalAction(int[] actions) {
+		List<Integer> legalActions = new ArrayList<Integer>();
+		for (int action : actions) {
+			int[][] clone = deep_copy(game.getCells());
+	        GameManager.move(clone, action);
+	        if (!isSameCells(game.getCells(), clone)) {
+	        	legalActions.add(action);
+	        }
+		}
+		return legalActions.toArray(new Integer[legalActions.size()]);
+	}
+	
+	private boolean isSameCells(int[][] original, int[][] changed) {
+		for (int i = 0; i < original.length; i++)
+			for (int j = 0; j < original[i].length; j++)
+				if (original[i][j] != changed[i][j])
+					return false;
+		return true;
+	}
+	
 	private double getScore(int action) {
 		int[][] clone = deep_copy(game.getCells());
         int bonus = GameManager.move(clone, action);
