@@ -39,7 +39,7 @@ public class GUI {
 			new Color(0xECC230)
 			
 	};
-	public static Font FONT = new Font("Helvetica Neue",Font.BOLD,55);
+	public static Font FONT = new Font("Helvetica Neue",Font.BOLD, 42);
 	
 	private JFrame frame;
 	public GUI(final int width, final int height, final GameManager gm){
@@ -129,6 +129,7 @@ public class GUI {
 							String text = String.valueOf(cells[r][c]);
 							//graphics.setFont(FONT);
 							graphics.setFont(scaleFont(text, tileInnerWidth * 0.8f, graphics, FONT));
+
 							FontMetrics fm = g.getFontMetrics(graphics.getFont());
 							int textWidth = fm.stringWidth(text);
 							int textHeight = fm.getHeight();
