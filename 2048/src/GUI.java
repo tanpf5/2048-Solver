@@ -53,6 +53,7 @@ public class GUI {
 			public void actionPerformed(ActionEvent e){
 				gm.setPlayer(new HumanPlayer(startBtn));
 				gm.start();
+				
 			}
 			
 		});
@@ -64,6 +65,7 @@ public class GUI {
 			public void actionPerformed(ActionEvent e){
 				gm.setPlayer(new AIPlayer(gm.getRandom(), gm));
 				gm.start();
+				startBtn.setEnabled(false);
 			}
 			
 		});
@@ -125,7 +127,8 @@ public class GUI {
 								graphics.setColor(getColor(FONT_COLORS[1],alpha));
 							}
 							String text = String.valueOf(cells[r][c]);
-							graphics.setFont(FONT);
+							//graphics.setFont(FONT);
+							graphics.setFont(scaleFont(text, tileInnerWidth * 0.8f, graphics, FONT));
 							FontMetrics fm = g.getFontMetrics(graphics.getFont());
 							int textWidth = fm.stringWidth(text);
 							int textHeight = fm.getHeight();
@@ -142,6 +145,7 @@ public class GUI {
 					String text;
 					int tWidth;
 					int tHeight;
+					gm.runtimeCounter++;
 					if(gameOverFlg){
 						text = "You Win!";
                         fontMetrics = g.getFontMetrics(graphics.getFont());
@@ -159,8 +163,10 @@ public class GUI {
                         graphics.setColor(FONT_COLORS[1]);
                         graphics.drawString(text, (int) ((0.5d * getWidth()) - (tWidth * 0.5d)),
                                        (int) ((0.5d * getHeight()) + (tHeight * 0.3d)));
+                        //startBtn.setEnabled(true);
 						
 					}
+					gm.start();
 				}
 				
 			}
@@ -187,6 +193,16 @@ public class GUI {
 	private Color getColor(Color color, float alpha){
 		float[] ingredients = color.getRGBComponents(null);
 		return new Color(ingredients[0],ingredients[1],ingredients[2],alpha);
+	}
+	private static final Font scaleFont(final String text,final float width,final Graphics g,final Font font){
+		final float fontWidth = g.getFontMetrics(font).stringWidth(text);
+		if (fontWidth <= width){
+			return font;
+		}
+		else{
+			final float fontSize = ((float) width / fontWidth) * font.getSize();
+			return font.deriveFont(fontSize);
+		}
 	}
 
 	public static void main(String[] args){

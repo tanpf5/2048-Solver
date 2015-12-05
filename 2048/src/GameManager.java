@@ -13,6 +13,7 @@ public class GameManager {
 	public static final int LEFT = 2;
 	public static final int RIGHT = 3;
 	public static final int[] ACTIONS = {UP, DOWN, LEFT, RIGHT};
+	public int runtimeCounter = 0;
 	
 	private Player curPlayer;
 	private Player player;
@@ -81,19 +82,22 @@ public class GameManager {
 			}
 			if (curPlayer != null) {
 				int tmpAction =curPlayer.getAction();
-				System.out.println(tmpAction);
+				//System.out.println(tmpAction);
 				score += move(cells, tmpAction);
-				System.out.println(score);
+				//System.out.println(score);
 				generateNewTiles(cells);
+				if (hasWon(cells)) {
+					hasWon = true;
+					System.out.println("run time "+ runtimeCounter + " : win with score "+score);
+				}
+				else if (hasLost(cells)) {
+					hasWon = false;
+					System.out.println("run time "+ runtimeCounter + " : lose with score "+score);
+				}
 			}
-			if (hasWon(cells)) {
-				hasWon = true;
-			}
-			else if (hasLost(cells)) {
-				hasWon = false;
-			}
+			
 		}
-		System.out.println("game over");	
+		//System.out.println("game over");	
 	}
 	public boolean hasWon(int[][] cells){
 		for(int r = 0; r< cells.length; r++){
