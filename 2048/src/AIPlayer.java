@@ -5,7 +5,7 @@ import java.util.Random;
 
 
 public class AIPlayer implements Player {
-	public static final int DEFAULT_DEPTH = 6;
+	public static int DEPTH = 5;
 	public static final int BIG_TILE = 64;
 	public static final int[] UP = new int[] { -1, 0 };
     public static final int[] RIGHT = new int[] { 0, 1 };
@@ -28,6 +28,9 @@ public class AIPlayer implements Player {
         final double[] scores = new double[4];
         int bestAction = -1;
         double maxScore = Integer.MIN_VALUE;
+        if (getAllEmptyCells(game.getCells()).size() >= 7)
+        	DEPTH = 5;
+        else DEPTH = 6;
         for (int action : getLegalAction(GameManager.ACTIONS)) {
         	double score = getScore(action);
         	scores[action] = score;
@@ -66,7 +69,7 @@ public class AIPlayer implements Player {
 	}
 	
 	private double getExpectiValue(int totalScore, int[][] cells, int depth) {
-		if (depth == DEFAULT_DEPTH) {
+		if (depth == DEPTH) {
 			return evaluationFunction(totalScore, cells);
 		}
 		List<Integer[]> emptyCells = getAllEmptyCells(cells);
@@ -83,7 +86,7 @@ public class AIPlayer implements Player {
 	}
 	
 	private double getMaxValue(int totalScore, int[][] cells, int depth) {
-		if (depth == DEFAULT_DEPTH) {
+		if (depth == DEPTH) {
 			return evaluationFunction(totalScore, cells);
 		}
         double maxScore = Integer.MIN_VALUE;
