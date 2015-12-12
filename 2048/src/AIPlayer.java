@@ -120,21 +120,46 @@ public class AIPlayer implements Player {
 		return totalScore 
 				+ getCornerBonus(cells) * scoreFactor
 				+ getEmptyCellsBonus(cells) * scoreFactor
-				+ getAdjacencyBonus(cells) * scoreFactor;
+				+ getAdjacencyBonus(cells) * scoreFactor
+				;
 	}
 	
 	private double getCornerBonus(int[][] cells) {
 		double factor = 1.0;
-		double total = 0;
-		for (int i = 0; i < cells.length; i++)
-			for (int j = 0; j < cells[i].length; j++) 
-				if (cells[i][j] != GameManager.EMPTY_TILE) {
-					int n = 1;
-					if (i % (cells.length - 1) == 0) n *= 2.5;
-					if (j % (cells.length - 1) == 0) n *= 2.5;
-					total += n * Math.log(cells[i][j]);
-				}
-		return total * factor;
+        double[] totals = new double[4];
+        for (int row = 0; row < cells.length; row++) {
+            int currentColumn = 0;
+            int nextColumn = currentColumn + 1;
+            while (nextColumn < cells[row].length) {
+                while (nextColumn < cells[row].length - 1 && isEmpty(cells, row, nextColumn))
+                	nextColumn++;
+                final int currentPower = !isEmpty(cells, row, currentColumn) ? (int) (Math.log(cells[row][currentColumn]) / Math.log(2)) : 0;
+                final int nextPower = !isEmpty(cells, row, nextColumn) ? (int) (Math.log(cells[row][nextColumn]) / Math.log(2)) : 0;
+                if (currentPower > nextPower)
+                    totals[0] += nextPower - currentPower;
+                else if (nextPower > currentPower)
+                    totals[1] += currentPower - nextPower;
+                currentColumn = nextColumn;
+                nextColumn++;
+            }
+        }
+        for (int column = 0; column < cells[0].length; column++) {
+            int currentRow = 0;
+            int nextRow = currentRow + 1;
+            while (nextRow < cells.length) {
+                while (nextRow < cells.length - 1 && isEmpty(cells, nextRow, column))
+                    nextRow++;
+                final int currentPower = !isEmpty(cells, currentRow, column) ? (int) (Math.log(cells[currentRow][column]) / Math.log(2)) : 0;
+                final int nextPower = !isEmpty(cells, nextRow, column) ? (int) (Math.log(cells[nextRow][column]) / Math.log(2)) : 0;
+                if (currentPower > nextPower)
+                    totals[2] += nextPower - currentPower;
+                else if (nextPower > currentPower)
+                    totals[3] += currentPower - nextPower;
+                currentRow = nextRow;
+                nextRow++;
+            }
+        }
+        return (Math.max(totals[0], totals[1]) + Math.max(totals[2], totals[3])) * factor;
 	}
 	
 	private double getEmptyCellsBonus(int[][] cells) {
