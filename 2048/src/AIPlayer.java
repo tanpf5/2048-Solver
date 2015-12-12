@@ -28,9 +28,13 @@ public class AIPlayer implements Player {
         final double[] scores = new double[4];
         int bestAction = -1;
         double maxScore = Integer.MIN_VALUE;
-        if (getAllEmptyCells(game.getCells()).size() >= 7)
-        	DEPTH = 5;
-        else DEPTH = 6;
+        int emptyCells = getAllEmptyCells(game.getCells()).size();
+        if (emptyCells <= 4)
+        	DEPTH = 7;
+        else 
+        	if (emptyCells >= 10)
+        		DEPTH = 5;
+        	else DEPTH = 6;
         for (int action : getLegalAction(GameManager.ACTIONS)) {
         	double score = getScore(action);
         	scores[action] = score;
