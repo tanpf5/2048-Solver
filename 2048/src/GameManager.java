@@ -110,7 +110,7 @@ public class GameManager {
 		return false;
 		
 	}
-	public boolean hasLost(int[][] cells){
+	public static boolean hasLost(int[][] cells){
 		for (int r = 0; r < cells.length; r++) {
 			for (int c =0; c < cells[r].length; c++) {
 				if (cells[r][c] == EMPTY_TILE) {
@@ -127,7 +127,7 @@ public class GameManager {
 		}
 		return true;
 	}
-	public boolean canBeMerged(int[][] cells, int row, int column){
+	public static boolean canBeMerged(int[][] cells, int row, int column){
 		return ((row > 0 && cells[row - 1][column] == cells[row][column]) ||
 	            (column < cells[row].length - 1 && cells[row][column + 1] == cells[row][column]) ||
 	            (row < cells.length - 1 && cells[row + 1][column] == cells[row][column]) ||

@@ -121,11 +121,25 @@ public class AIPlayer implements Player {
 				+ getCornerBonus(cells) * scoreFactor
 				+ getEmptyCellsBonus(cells) * scoreFactor
 				+ getAdjacencyBonus(cells) * scoreFactor
-				;
+				+ (GameManager.hasLost(cells) ? -20000 : 0);
 	}
 	
 	private double getCornerBonus(int[][] cells) {
-		double factor = 1.0;
+		double factor1 = 1.0d;
+		
+		double total = 0;
+		for (int i = 0; i < cells.length; i++)
+			for (int j = 0; j < cells[i].length; j++) 
+				if (cells[i][j] != GameManager.EMPTY_TILE) {
+					int n = 1;
+					if (i % (cells.length - 1) == 0 && j % (cells.length - 1) == 0) n *= 8;
+					else {
+						if (i % (cells.length - 1) == 0) n *= 2.5;
+						if (j % (cells.length - 1) == 0) n *= 2.5;
+					}
+					total += n * Math.log(cells[i][j]);
+				}
+		
         double[] totals = new double[4];
         for (int row = 0; row < cells.length; row++) {
             int currentColumn = 0;
@@ -133,12 +147,12 @@ public class AIPlayer implements Player {
             while (nextColumn < cells[row].length) {
                 while (nextColumn < cells[row].length - 1 && isEmpty(cells, row, nextColumn))
                 	nextColumn++;
-                final int currentPower = !isEmpty(cells, row, currentColumn) ? (int) (Math.log(cells[row][currentColumn]) / Math.log(2)) : 0;
-                final int nextPower = !isEmpty(cells, row, nextColumn) ? (int) (Math.log(cells[row][nextColumn]) / Math.log(2)) : 0;
+                final double currentPower = !isEmpty(cells, row, currentColumn) ? Math.log(cells[row][currentColumn]) : 0;
+                final double nextPower = !isEmpty(cells, row, nextColumn) ? Math.log(cells[row][nextColumn]) : 0;
                 if (currentPower > nextPower)
-                    totals[0] += nextPower - currentPower;
+                    totals[0] += currentPower - nextPower;
                 else if (nextPower > currentPower)
-                    totals[1] += currentPower - nextPower;
+                    totals[1] += nextPower - currentPower;
                 currentColumn = nextColumn;
                 nextColumn++;
             }
@@ -149,22 +163,26 @@ public class AIPlayer implements Player {
             while (nextRow < cells.length) {
                 while (nextRow < cells.length - 1 && isEmpty(cells, nextRow, column))
                     nextRow++;
-                final int currentPower = !isEmpty(cells, currentRow, column) ? (int) (Math.log(cells[currentRow][column]) / Math.log(2)) : 0;
-                final int nextPower = !isEmpty(cells, nextRow, column) ? (int) (Math.log(cells[nextRow][column]) / Math.log(2)) : 0;
+                final double currentPower = !isEmpty(cells, currentRow, column) ? Math.log(cells[currentRow][column]) : 0;
+                final double nextPower = !isEmpty(cells, nextRow, column) ? Math.log(cells[nextRow][column]) : 0;
                 if (currentPower > nextPower)
-                    totals[2] += nextPower - currentPower;
+                    totals[2] += currentPower - nextPower;
                 else if (nextPower > currentPower)
-                    totals[3] += currentPower - nextPower;
+                    totals[3] += nextPower - currentPower;
                 currentRow = nextRow;
                 nextRow++;
             }
         }
-        return (Math.max(totals[0], totals[1]) + Math.max(totals[2], totals[3])) * factor;
+        int row = 0, col = 0;
+        if (totals[0] < totals[1]) col = 3;
+        if (totals[2] < totals[3]) row = 3;
+        double factor2 = Math.log(cells[row][col]) * 0.02d;
+        return total * factor1 + (Math.max(totals[0], totals[1]) + Math.max(totals[2], totals[3])) * factor2;
 	}
 	
 	private double getEmptyCellsBonus(int[][] cells) {
 		int count = getAllEmptyCells(cells).size();
-		double factor = 1.0;
+		double factor = 3.0;
 		return Math.log(count) * factor;
 	}
 	
@@ -199,22 +217,23 @@ public class AIPlayer implements Player {
 	}
 	private double getAdjacencyBonus(int[][] cells){
 		double bonus = 0.0d;
+		double factor = 2.0d;
 		for(int r = 0; r < cells.length; r++){
 			for(int c = 0; c< cells[r].length; c++){
 				if(!isEmpty(cells, r,c)){
-					int p = (int) (Math.log(cells[r][c])/Math.log(2));
+					double p = Math.log(cells[r][c]);
 					for(int dir = 1; dir <= 2; dir++){
 						int[] farthestCell = getFarthestCell(cells, r, c, DIRECTIONS[dir]);
 						if(isValid(cells, farthestCell[0], farthestCell[1] ) &&
 								!isEmpty(cells, farthestCell[0],farthestCell[1])){
-							int p2 = (int) (Math.log(cells[farthestCell[0]][farthestCell[1]]) / Math.log(2));
+							double p2 = Math.log(cells[farthestCell[0]][farthestCell[1]]);
 							bonus -= Math.abs(p - p2);
 						}
 					}
 				}
 			}
 		}
-		return bonus;
+		return bonus * factor;
 	}
 	private int[][] deep_copy(int[][] cells) {
 		int[][] copy = new int[cells.length][cells[0].length];
