@@ -167,7 +167,7 @@ public class GUI {
                         //startBtn.setEnabled(true);
 						
 					}
-					gm.start();
+					//gm.start();
 				}
 				
 			}
